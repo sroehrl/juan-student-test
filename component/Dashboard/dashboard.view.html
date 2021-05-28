@@ -1,0 +1,73 @@
+<div class="container">
+    <h1 class="font-lg">Dashboard</h1>
+    <div class="m-t-5 p-4 b-rounded b-1 b-primary">
+        <h3>Scores</h3>
+        <div id="score-container"></div>
+    </div>
+    <div class="m-t-5 p-4 b-rounded b-1 b-primary">
+        <h3>Available Tests</h3>
+        <div id="cloze-container"></div>
+    </div>
+</div>
+<script>
+    const me = JSON.parse(sessionStorage.user)
+    const allTests = [];
+    let myScores = []
+    setTimeout(async ()=>{
+
+        if(me.user_type == 'teacher'){
+            const {data} = await api.get('/test?teacher_id='+me.id);
+            data.forEach(test=> allTests.push(test))
+        }
+        for(let i = 0; i < me.user_teacher.length; i++){
+            const {data} = await api.get('/test?teacher_id='+me.user_teacher[i].teacher_id);
+            data.forEach(test=> allTests.push(test))
+        }
+        renderTests(allTests)
+        const {data} = await api.get('/score');
+        renderScores(data)
+        if(typeof data.scores !== 'undefined'){
+            myScores = data.scores;
+        }
+    })
+
+    function navigateToTest(testId, element){
+        if(myScores.find(score => score.cloze_id === testId)){
+            alert('You already too this test');
+        } else {
+            window.location.href = element.dataset.target
+        }
+
+    }
+
+    function renderTests(data){
+        const container = document.getElementById('cloze-container');
+        container.innerHTML = '';
+        const link = me.user_type === 'teacher' ? '{{base}}test/' : '{{base}}take-test/';
+        data.forEach((test,i) => {
+            container.innerHTML += `<button class="b-1 b-rounded b-primary bg-white text-primary p-x-3 m-y-2" onclick="navigateToTest('${test.id}', this)" data-target="${link + test.id}">Test ${i}</button><br>`;
+        })
+    }
+
+    function renderScores(data){
+        const container = document.getElementById('score-container');
+        container.innerHTML = '';
+        container.className = 'grid-6-3-3';
+        if(me.user_type === 'teacher'){
+            data.forEach(student => {
+                student.scores.forEach(score=>{
+                    container.innerHTML += `<p>${student.email}</p><p>${allTests.findIndex(t=> t.id === score.cloze_id)}</p><p>${score.score}%</p>`;
+                })
+
+
+            })
+        } else {
+            container.className = 'grid-6-6';
+            data.scores.forEach(entry=>{
+                const score = allTests.filter(t => t.id === entry.cloze_id && t.disclose ===1).length > 0 ? entry.score + '%' : 'Your score will be available shortly.'
+                container.innerHTML += `<p>Test #${allTests.findIndex(t=> t.id === entry.cloze_id)}</p> <p>${score}</p>`
+            })
+        }
+
+    }
+</script>

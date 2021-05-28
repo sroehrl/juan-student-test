@@ -1,0 +1,69 @@
+<div class="container">
+  <h1 class="font-lg">Create test</h1>
+  <div class="m-t-5 p-4 b-rounded b-1 b-primary">
+    <form id="generate" class="m-b-5">
+      <textarea id="source" rows="10" class="w-100p" name="source">{{original}}
+      </textarea>
+      <div class="grid-4-4-4">
+        <div>Every n-th word</div>
+        <div>
+          <input type="number" name="nth" placeholder="nth-word" value="7">
+        </div>
+        <div>
+
+          <input type="submit" value="generate">
+        </div>
+      </div>
+
+    </form>
+    <form id="newTest">
+      <div class="grid-6-6">
+        <textarea name="test"   rows="10">{{test_text}}</textarea>
+        <textarea name="answers"   rows="10">{{answer_json}}</textarea>
+      </div>
+      <div>
+        <label for="disclose">Disclose score?</label>
+        <input type="checkbox" name="disclose" n-if="disclose === 0">
+        <input type="checkbox" name="disclose" checked n-if="disclose === 1">
+      </div>
+
+      <input type="submit" value="create/update">
+    </form>
+  </div>
+</div>
+<script>
+  const generateForm = document.getElementById('generate');
+  const form = document.getElementById('newTest');
+  generateForm.addEventListener('submit', ev => {
+    ev.preventDefault();
+    const answers = {};
+    let test = '';
+    let counter = 0;
+    const words = generateForm.source.value.split(' ');
+    words.forEach((word,i) => {
+      if((i+1) % Number(generateForm.nth.value) === 0){
+        answers['answer_'+counter] = word;
+        test += ' __'
+        counter++;
+      } else {
+        test += (i > 0 ? ' ':'') + word;
+      }
+    })
+    form.test.value = test;
+    form.answers.value = JSON.stringify(answers);
+  })
+
+
+  form.addEventListener('submit', ev=>{
+    ev.preventDefault();
+    api.post('/test',{
+      test_text: form.test.value,
+      original: generateForm.source.value,
+      answer_json: JSON.parse(form.answers.value),
+      disclose: form.disclose.checked,
+      id: '{{id}}'
+    }).then(res => {
+      alert('test saved')
+    })
+  })
+</script>

@@ -1,0 +1,24 @@
+<div>
+    <h2 class="text-primary">Not your first neoan3 project? We've got some news.</h2>
+    <p>
+        3.1.x embraces PHP8 further more with making use of Attributes! (Don't worry, neoan3 is still fully compatible down to 7.4)
+    </p>
+    <h2 class="font-lg text-primary">What's new?</h2>
+    <h3 class="font-md text-primary">Events</h3>
+    <p class="m-t-3 font-md">
+        Events have a new static method called "hook".
+        This enables you to listen to hooks even after they have been fired programmatically and when running PHP single-threaded.
+        This doesn't mean you can go back in time, but it allows reacting based on past events.
+    </p>
+    <h3 class="font-md text-primary">Attributes & Providers</h3>
+    <p class="m-t-3 font-md">
+        The biggest change is the introduction of a ReflectionWrapper in the core, allowing to read Attributes and react on them based on
+        loaded providers. See the Demo-Frame constructor for an example on how to pass in your providers to attributes.
+        Your business logic will be easier on the eye and written independently from worrying about dependency injection and testability.
+    </p>
+    <h3 class="font-md text-primary">Migration</h3>
+    <p class="m-t-3 font-md">
+        With improvements on the CLI, easier index-handling is possible for the UI.
+        Check it out at <a href="{{base}}migrate">/migrate</a>
+    </p>
+</div>

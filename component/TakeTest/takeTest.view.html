@@ -1,0 +1,23 @@
+<div class="container">
+  <h1 class="font-lg">Please fill out the missing words</h1>
+  <form id="test-form">
+    {{testText}} <br>
+    <button type="submit">submit</button>
+  </form>
+
+</div>
+<script>
+  const form = document.getElementById('test-form');
+  form.addEventListener('submit', ev => {
+    ev.preventDefault()
+    const answers = document.querySelectorAll('[data-answer]')
+    const answerObject = {};
+    answers.forEach(answer => {
+      answerObject[answer.dataset.answer] = answer.value;
+    })
+    api.post('/take-test', {answers:answerObject, id: '{{testId}}'}).then(res =>{
+      console.log(res)
+      window.location.href = '{{base}}dashboard';
+    })
+  })
+</script>
